@@ -1,0 +1,29 @@
+{{>layouts/header}}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">id</th>
+        <th scope="col">title</th>
+        <th scope="col">contents</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    {{#model}}
+        <tr>
+
+            <th scope="row">{{id}}</th>
+            <td><a href="{{id}}";>{{title}}</a></td>
+            <td>{{contents}}</td>
+
+        </tr>
+    {{/model}}
+
+
+    </tbody>
+</table>
+
+<a href="/basicpage" class="btn btn-primary">new writing</a>
+
+{{>layouts/footer}}

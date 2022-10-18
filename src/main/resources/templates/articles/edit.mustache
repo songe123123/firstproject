@@ -1,0 +1,24 @@
+{{>layouts/header}}
+
+{{#article}}
+
+<form class="container" action="/aricles/update" method="post">
+    <input type="hidden"  name="id" value="{{id}}"> //몇번아티클을 보내줄지의 대한 정보
+    <div class="mb-3">
+        <label class="form-label">title</label>
+        <input type="text" class="form-control" name="title"
+        value="{{title}}">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">context</label>
+        <textarea class="form-control" rows="3" name="content">
+            {{content}}
+        </textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <a href="/articles/{{id}}">Back</a>
+</form>
+
+{{/article}}
+
+{{>layouts/footer}}

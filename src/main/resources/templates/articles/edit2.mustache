@@ -1,0 +1,17 @@
+{{>layouts/header}}
+
+{{#model}}
+<form class="container" method="post" action="/basic/editsend">
+    <input type="hidden" name="id" value="{{id}}">
+    <div class="mb-3">
+        <label class="form-label">title</label>
+        <input type="text" class="form-control" name="title" value="{{title}}">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">context</label>
+        <textarea class="form-control" rows="3" name="contents">{{contents}}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{{/model}}
+{{>layouts/footer}}

@@ -1,0 +1,254 @@
+{{>layouts/header}}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">id</th>
+        <th scope="col">title</th>
+        <th scope="col">contents</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    {{#model}}
+<tr>
+
+        <th scope="row">{{id}}</th>
+        <td>{{title}}</td>
+        <td>{{contents}}</td>
+
+    </tr>
+    {{/model}}
+
+        </tbody>
+
+</table>
+
+
+
+
+
+
+
+
+
+{{#comment}}
+<!--댓글보기창-->
+    <div class="card" id="body-{{id}}">
+    <div class="card-header" >
+        {{body}}
+
+        <!-- 댓글 수정 모달 버튼 -->
+        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" ata-bs-target="#comment-edit-modal"
+        data-bs-id="{{id}}"
+                data-bs-nickname="{{nickname}}"
+                data-bs-body="{{body}}"
+                data-bs-main_article="{{main_article}}">
+
+            edit comment
+
+        </button>
+        <!-- Modal -->
+        <div class="modal fade" id="comment-edit-modal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">댓글 수정</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        ...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--댓글 삭제 버튼-->
+        <button type="button" class="btn btn-outline-danger" id="CommentDelete" data-commentid="{{id}}">delete</button>
+
+    </div>
+
+
+
+
+
+    <div class="card-body">
+        <p class="card-text" id="nickname id">
+            {{nickname}}
+        </p>
+    </div>
+</div>
+<p></p>
+
+{{/comment}}
+
+
+
+
+<!--댓글쓰기창-->
+<form>
+    <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">nickname</label>
+        <input type="text" class="form-control" id="NewCommentNickname">
+
+    <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">body</label>
+        <input type="text" class="form-control p-5" id="NewCommentBody">
+    </div>
+
+        <input type="hidden" id="NewComment_HiddenID" value={{model.id}}>
+
+            <button type="submit" class="btn btn-primary" id="CommentSubmitBtn">Submit</button>
+        </div>
+</form>
+
+
+<!--새로운 댓글 전송-->
+<script>
+const CommentSubmitBtn = document.querySelector("#CommentSubmitBtn");
+
+
+CommentSubmitBtn.addEventListener("click",()=>{
+
+const comment={
+nickname : document.querySelector("#NewCommentNickname").value,
+body : document.querySelector("#NewCommentBody").value,
+    main_article : document.querySelector("#NewComment_HiddenID").value}
+console.log(comment);
+
+
+    const url= "/api/basic/"+{{model.id}};
+    fetch(url,{
+        method : "post",
+        body : JSON.stringify(comment),
+        headers : { "Content-Type":"application/json"}
+
+    }).then(response=> {
+        const msg = (response.ok) ? "new comment uploaded!":"new comment upload failed";
+        alert(msg);
+        window.location.reload();
+    })
+})
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--댓글 수정 템플릿 가져오기-->
+
+<script>
+    {
+        const refreshCommentBtn = document.querySelector("#comment-edit-modal");
+
+        // modal이 열리는것(event)때 함수실행한다
+        refreshCommentBtn.addEventListener("show.bs.modal",function (event){
+            const button = event.relatedTarget //modal이 열릴때(=event될때) 관련있는타겟이 변수 button이다.
+
+
+
+            // document.querySelector("#edit-comment-id").value = document.querySelector("#data-bs-id").value
+            // 부트스트랩 모달창에서 준 레시피대로 해야하는듯?
+            // document.querySelector("#edit-comment-nickname").value = nickname
+            // document.querySelector("#edit-comment-id").value = 머스테치nickname //이것도 안될듯?
+            // document.querySelector("#edit-comment-body").value = body
+            // document.querySelector("#edit-comment-main_article").value = main_article
+
+
+
+            //정보가져오기
+            const id = button.getAttribute("data-bs-id")
+            const nickname = button.querySelector("data-bs-nickname")
+            const body = button.querySelector("data-bs-body")
+            const main_article = button.querySelector("data-bs-main_article")
+
+
+            //데이터 반영
+            document.querySelector("#edit-comment-id").value = id;
+            document.querySelector("#edit-comment-nickname").value = nickname;
+            document.querySelector("#edit-comment-body").value = body;
+            document.querySelector("#edit-comment-main_article").value = main_article;
+
+        });
+    }
+
+</script>
+<script>
+<!--댓글 수정-->
+{
+ const commentupdateBtn = document.querySelector("#comment-edit-modal")
+    commentupdateBtn.addEventListener("click",()=>{
+
+        const NewComment ={
+            id : document.querySelector("#edit-comment-id").value,
+            nickname : document.querySelector("#edit-comment-nickname").value,
+            body : document.querySelector("#edit-comment-body").value,
+            main_article : document.querySelector("#edit-comment-main_article").value
+        }
+
+
+        const url = "/api/basic/article/"+{{model.id}};
+                fetch(url, {
+                method : "PATCH",
+                body : JSON.stringify(NewComment),
+                headers : { "Content-Type":"application/json"},
+
+            }).then(function (response){
+                    const msg = (response.ok) ? "new comment refreshed!" :"new comment refresh failed"
+                    alert(msg)
+                    window.location.reload();
+
+                })
+    })
+}
+</script>
+
+<!--댓글 삭제-->
+<script>
+    {
+        const DeleteBtn = document.querySelectorAll("#CommentDelete") //all선택이네?
+        //버튼을 개별로 선택할수있게끔 만들고,
+        DeleteBtn.forEach(selectBtn=>{
+
+        //참고: 필요한 정보는 api사이트에 body에 들어가는 것들임
+            selectBtn.addEventListener("click",(event)=>{
+            const btn = event.target;
+            const CommentId = btn.getAttribute("data-commentid")
+
+            const url = `/api/basic/article/${CommentId}`;
+            fetch(url,{
+                method : "DELETE"})
+                    .then(function(response){
+
+                        if(!response.ok){
+                    alert("comment delete failed")
+                return;}
+
+
+
+                const success = document.querySelector(`#body-${CommentId}`)
+                success.remove();
+                        alert("comment delete success")
+
+
+                    })
+            })
+                })
+    }
+
+</script>
+
+
+
+
+{{>layouts/footer}}
